@@ -130,15 +130,15 @@ export function renderApp(state: AppViewState) {
             </div>
             <div class="brand-text">
               <div class="brand-title">ANIMA</div>
-              <div class="brand-sub">Gateway Dashboard</div>
+              <div class="brand-sub">Sovereign Runtime</div>
             </div>
           </div>
         </div>
         <div class="topbar-status">
           <div class="pill">
             <span class="statusDot ${state.connected ? "ok" : ""}"></span>
-            <span>${t("common.health")}</span>
-            <span class="mono">${state.connected ? t("common.ok") : t("common.offline")}</span>
+            <span>Runtime</span>
+            <span class="mono">${state.connected ? "Online" : "Offline"}</span>
           </div>
           ${renderThemeToggle(state)}
         </div>
@@ -177,13 +177,13 @@ export function renderApp(state: AppViewState) {
           <div class="nav-group__items">
             <a
               class="nav-item nav-item--external"
-              href="https://docs.anima.ai"
+              href="https://veil.markets"
               target="_blank"
               rel="noreferrer"
-              title="${t("common.docs")} (opens in new tab)"
+              title="VEIL Markets (opens in new tab)"
             >
               <span class="nav-item__icon" aria-hidden="true">${icons.book}</span>
-              <span class="nav-item__text">${t("common.docs")}</span>
+              <span class="nav-item__text">VEIL Markets</span>
             </a>
           </div>
         </div>
@@ -204,8 +204,8 @@ export function renderApp(state: AppViewState) {
         }
         <section class="content-header">
           <div>
-            ${state.tab === "usage" ? nothing : html`<div class="page-title">${titleForTab(state.tab)}</div>`}
-            ${state.tab === "usage" ? nothing : html`<div class="page-sub">${subtitleForTab(state.tab)}</div>`}
+            ${state.tab === "usage" || state.tab === "anima" ? nothing : html`<div class="page-title">${titleForTab(state.tab)}</div>`}
+            ${state.tab === "usage" || state.tab === "anima" ? nothing : html`<div class="page-sub">${subtitleForTab(state.tab)}</div>`}
           </div>
           <div class="page-meta">
             ${state.lastError ? html`<div class="pill danger">${state.lastError}</div>` : nothing}

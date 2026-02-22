@@ -4,11 +4,10 @@ import type { IconName } from "./icons.js";
 export const TAB_GROUPS = [
   { label: "agent", tabs: ["anima", "chat"] },
   {
-    label: "control",
-    tabs: ["overview", "channels", "instances", "sessions", "usage", "cron"],
+    label: "system",
+    tabs: ["overview", "channels", "sessions", "cron", "agents", "skills", "nodes"],
   },
-  { label: "config", tabs: ["agents", "skills", "nodes"] },
-  { label: "settings", tabs: ["config", "debug", "logs"] },
+  { label: "advanced", tabs: ["config", "instances", "usage", "debug", "logs"] },
 ] as const;
 
 export type Tab =
@@ -98,7 +97,7 @@ export function tabFromPath(pathname: string, basePath = ""): Tab | null {
     normalized = "/";
   }
   if (normalized === "/") {
-    return "chat";
+    return "anima";
   }
   return PATH_TO_TAB.get(normalized) ?? null;
 }
@@ -128,7 +127,7 @@ export function inferBasePathFromPathname(pathname: string): string {
 export function iconForTab(tab: Tab): IconName {
   switch (tab) {
     case "anima":
-      return "zap";
+      return "globe";
     case "agents":
       return "folder";
     case "chat":
