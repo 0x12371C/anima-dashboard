@@ -544,3 +544,294 @@ body::after {
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.06); }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.12); }
+
+/* ═══════════════════════════════════════════════════
+   ANIMA — Component Overrides
+   Transforms stock admin UI into VEIL aesthetic
+   ═══════════════════════════════════════════════════ */
+
+/* Force dark only — no light mode */
+:root[data-theme="light"] {
+  color-scheme: dark !important;
+}
+
+/* Hide theme toggle entirely */
+.theme-toggle { display: none !important; }
+
+/* ── Page Titles ── */
+.page-title {
+  font-family: var(--font-display) !important;
+  font-weight: 400 !important;
+  font-size: 28px !important;
+  letter-spacing: -0.03em !important;
+  color: var(--text-strong) !important;
+}
+.page-sub {
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  font-weight: 300 !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ── Cards — Dark glass with subtle glow ── */
+.card {
+  background: rgba(255, 255, 255, 0.018) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  background: radial-gradient(
+    500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(16, 185, 129, 0.03),
+    transparent 40%
+  );
+}
+.card:hover::before { opacity: 1; }
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.card-title {
+  font-family: var(--font-label) !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.3em !important;
+  text-transform: uppercase !important;
+  color: rgba(16, 185, 129, 0.4) !important;
+}
+.card-sub {
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  font-weight: 300 !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ── Stats — Thinner, more elegant ── */
+.stat {
+  background: rgba(255, 255, 255, 0.012) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 10px !important;
+}
+.stat-label {
+  font-family: var(--font-label) !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.25em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+.stat-value {
+  font-family: var(--font-label) !important;
+  font-size: 22px !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* ── Buttons — Angular, minimal ── */
+.btn {
+  font-family: var(--font-label) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  transition: all 0.3s ease !important;
+}
+.btn:hover {
+  border-color: rgba(16, 185, 129, 0.2) !important;
+  background: rgba(16, 185, 129, 0.04) !important;
+  color: var(--accent) !important;
+  transform: none !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.05) !important;
+}
+.btn.primary {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+  color: var(--accent) !important;
+}
+.btn.primary:hover {
+  background: rgba(16, 185, 129, 0.18) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.1) !important;
+}
+.btn.danger {
+  background: rgba(239, 68, 68, 0.06) !important;
+  border-color: rgba(239, 68, 68, 0.12) !important;
+  color: var(--danger) !important;
+}
+.btn--sm {
+  padding: 5px 10px !important;
+  font-size: 9px !important;
+}
+
+/* ── Inputs — Dark, minimal, emerald focus ── */
+.field input,
+.field textarea,
+.field select {
+  font-family: var(--font-body) !important;
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 8px !important;
+  color: var(--text) !important;
+  padding: 10px 14px !important;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.08), 0 0 20px rgba(16, 185, 129, 0.04) !important;
+  outline: none !important;
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.12) !important;
+}
+.field span {
+  font-family: var(--font-label) !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* ── Tables — Minimal, no chrome ── */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th {
+  font-family: var(--font-label) !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.15) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  padding: 8px 12px !important;
+  text-align: left !important;
+  background: transparent !important;
+}
+td {
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02) !important;
+}
+tr:hover td {
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.01) !important;
+}
+
+/* ── Pills — Subtle, ghost-style ── */
+.pill {
+  font-family: var(--font-label) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 6px !important;
+  padding: 5px 10px !important;
+}
+
+/* ── Callouts — Tinted glass ── */
+.callout {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 10px !important;
+  font-family: var(--font-body) !important;
+  font-weight: 300 !important;
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ── Note cards ── */
+.note-title {
+  font-family: var(--font-label) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+.note-grid .muted {
+  font-size: 12px !important;
+  font-weight: 300 !important;
+}
+
+/* ── Content header — More breathing room ── */
+.content-header {
+  padding-bottom: 24px !important;
+  margin-bottom: 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ── Nav labels — ANIMA section style ── */
+.nav-label__text {
+  font-family: var(--font-label) !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.25em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.12) !important;
+}
+.nav-item__text {
+  font-family: var(--font-label) !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ── Topbar — Cleaner ── */
+.topbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  background: rgba(6, 6, 6, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* ── Sidebar — Subtler ── */
+.nav {
+  border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
+  background: rgba(6, 6, 6, 0.5) !important;
+}
+
+/* ── Checkboxes ── */
+input[type="checkbox"] {
+  accent-color: var(--accent) !important;
+}
+
+/* ── Code blocks / mono elements ── */
+.mono, code, pre {
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+}
+
+/* ── Session link ── */
+.session-link {
+  color: var(--accent) !important;
+  font-size: 11px !important;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+.session-link:hover {
+  opacity: 1;
+}
