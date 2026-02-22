@@ -2,16 +2,17 @@ import { t } from "../i18n/index.ts";
 import type { IconName } from "./icons.js";
 
 export const TAB_GROUPS = [
-  { label: "chat", tabs: ["chat"] },
+  { label: "agent", tabs: ["anima", "chat"] },
   {
     label: "control",
     tabs: ["overview", "channels", "instances", "sessions", "usage", "cron"],
   },
-  { label: "agent", tabs: ["agents", "skills", "nodes"] },
+  { label: "config", tabs: ["agents", "skills", "nodes"] },
   { label: "settings", tabs: ["config", "debug", "logs"] },
 ] as const;
 
 export type Tab =
+  | "anima"
   | "agents"
   | "overview"
   | "channels"
@@ -27,6 +28,7 @@ export type Tab =
   | "logs";
 
 const TAB_PATHS: Record<Tab, string> = {
+  anima: "/anima",
   agents: "/agents",
   overview: "/overview",
   channels: "/channels",
@@ -125,6 +127,8 @@ export function inferBasePathFromPathname(pathname: string): string {
 
 export function iconForTab(tab: Tab): IconName {
   switch (tab) {
+    case "anima":
+      return "zap";
     case "agents":
       return "folder";
     case "chat":

@@ -17,11 +17,13 @@ export const en: TranslationMap = {
     chat: "Chat",
     control: "Control",
     agent: "Agent",
+    config: "Configure",
     settings: "Settings",
     expand: "Expand sidebar",
     collapse: "Collapse sidebar",
   },
   tabs: {
+    anima: "ANIMA",
     agents: "Agents",
     overview: "Overview",
     channels: "Channels",
@@ -37,6 +39,7 @@ export const en: TranslationMap = {
     logs: "Logs",
   },
   subtitles: {
+    anima: "Sovereign agent lifecycle, reputation, and chain status.",
     agents: "Manage agent workspaces, tools, and identities.",
     overview: "Gateway status, entry points, and a fast health read.",
     channels: "Manage channels and settings.",

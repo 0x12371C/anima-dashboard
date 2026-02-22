@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANIMA — Sovereign Agent Runtime</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #060606;
+  --bg-card: rgba(255,255,255,0.018);
+  --bg-card-hover: rgba(255,255,255,0.028);
+  --border: rgba(255,255,255,0.05);
+  --border-hover: rgba(255,255,255,0.10);
+  --border-active: rgba(16,185,129,0.25);
+  --text: rgba(255,255,255,0.87);
+  --text-muted: rgba(255,255,255,0.4);
+  --text-dim: rgba(255,255,255,0.15);
+  --text-ghost: rgba(255,255,255,0.07);
+  --emerald: #10B981;
+  --emerald-muted: rgba(16,185,129,0.4);
+  --emerald-glow: rgba(16,185,129,0.12);
+  --purple: #8B5CF6;
+  --purple-muted: rgba(139,92,246,0.4);
+  --amber: #F59E0B;
+  --amber-muted: rgba(245,158,11,0.4);
+  --red: #EF4444;
+  --red-muted: rgba(239,68,68,0.4);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+}
+
+html { font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Film Grain ── */
+#grain {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9999;
+  opacity: 0.035; mix-blend-mode: overlay;
+}
+
+/* ── Noise Texture BG ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ── Ambient Glow ── */
+.ambient-glow {
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none; z-index: 0;
+  animation: ambientDrift 20s ease-in-out infinite;
+}
+.ambient-glow.emerald {
+  background: rgba(16,185,129,0.04);
+  top: -200px; right: -100px;
+}
+.ambient-glow.purple {
+  background: rgba(139,92,246,0.03);
+  bottom: -200px; left: -100px;
+  animation-delay: -10s;
+}
+
+@keyframes ambientDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, 20px) scale(1.05); }
+  66% { transform: translate(-20px, -10px) scale(0.95); }
+}
+
+/* ── Container ── */
+.dashboard {
+  position: relative; z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+/* ── Label (VEIL numbered style) ── */
+.label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--emerald-muted);
+}
+.label.purple { color: var(--purple-muted); }
+.label.amber { color: var(--amber-muted); }
+.label.red { color: var(--red-muted); }
+.label.dim { color: var(--text-dim); }
+
+/* ── Header ── */
+.header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding-bottom: 24px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+.header-left .label { margin-bottom: 8px; }
+.header-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1;
+}
+.header-title .veil-mark {
+  color: var(--emerald);
+  font-style: italic;
+}
+.header-right { text-align: right; }
+.header-address {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.header-tier {
+  margin-top: 4px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.header-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ── Lifecycle ── */
+.lifecycle { margin-bottom: 48px; }
+.lifecycle .label { margin-bottom: 16px; }
+.lifecycle-track {
+  display: flex; gap: 6px;
+  position: relative;
+}
+.lifecycle-stage {
+  flex: 1;
+  padding: 14px 8px 12px;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+  opacity: 0;
+  transform: translateY(8px);
+}
+.lifecycle-stage.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.lifecycle-stage.completed {
+  background: var(--emerald-glow);
+  border-color: rgba(16,185,129,0.12);
+}
+.lifecycle-stage.current {
+  background: var(--emerald-glow);
+  border-color: var(--border-active);
+  box-shadow: 0 0 30px rgba(16,185,129,0.06), inset 0 1px 0 rgba(16,185,129,0.1);
+}
+.lifecycle-stage.future { opacity: 0.3; }
+.lifecycle-stage.future.visible { opacity: 0.3; }
+.lifecycle-icon {
+  font-size: 20px;
+  margin-bottom: 6px;
+  line-height: 1;
+  transition: transform 0.3s ease;
+}
+.lifecycle-stage.current .lifecycle-icon {
+  animation: iconPulse 3s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+.lifecycle-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.lifecycle-stage.current .lifecycle-name { color: var(--emerald); }
+.lifecycle-stage.future .lifecycle-name { color: var(--text-dim); }
+/* connector line */
+.lifecycle-connector {
+  position: absolute;
+  top: 50%; right: -4px;
+  width: 7px; height: 1px;
+  background: var(--border);
+  z-index: 2;
+}
+.lifecycle-stage.completed .lifecycle-connector { background: rgba(16,185,129,0.2); }
+
+/* ── Stats Grid ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+/* ── Card (shared) ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(12px);
+}
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16,185,129,0.04), transparent 40%);
+}
+.card:hover::before { opacity: 1; }
+.card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+.card .label { margin-bottom: 8px; }
+.card-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.card-value .unit {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+.card-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+.card-sub.positive { color: rgba(16,185,129,0.75); }
+.card-sub.negative { color: rgba(239,68,68,0.75); }
+.card-detail {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+/* ── Panels Grid ── */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+/* ── Panel specific ── */
+.panel-markets .card::before {
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16,185,129,0.05), transparent 40%);
+}
+.panel-identity .card::before {
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(139,92,246,0.05), transparent 40%);
+}
+.panel-validator .card::before {
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(245,158,11,0.05), transparent 40%);
+}
+.panel-infra .card::before {
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(239,68,68,0.05), transparent 40%);
+}
+
+/* ── Bloodsworn Bar ── */
+.bloodsworn-bar {
+  margin-bottom: 48px;
+}
+.bloodsworn-track {
+  height: 3px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 2px;
+  margin-top: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.bloodsworn-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--emerald), var(--amber), var(--red));
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.bloodsworn-fill::after {
+  content: '';
+  position: absolute;
+  right: 0; top: -3px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 12px rgba(255,255,255,0.3);
+}
+.bloodsworn-tiers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.bloodsworn-tier-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: color 0.3s;
+}
+.bloodsworn-tier-label.active { color: var(--text-muted); }
+
+/* ── Status Indicator ── */
+.status-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.status-dot.healthy { background: var(--emerald); box-shadow: 0 0 8px rgba(16,185,129,0.4); }
+.status-dot.degraded { background: var(--amber); box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+.status-dot.down { background: var(--red); box-shadow: 0 0 8px rgba(239,68,68,0.4); }
+.status-dot.none { background: rgba(255,255,255,0.15); }
+
+/* ── Counter Animation ── */
+.counter { display: inline-block; }
+
+/* ── Footer ── */
+.footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.footer-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.footer-tsl {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: color 0.3s;
+}
+.footer-tsl:hover { color: var(--emerald-muted); }
+
+/* ── Pulse ring on current stage ── */
+.pulse-ring {
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--emerald);
+  opacity: 0;
+  animation: pulseRing 3s ease-out infinite;
+}
+@keyframes pulseRing {
+  0% { opacity: 0.4; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.04); }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .panels { grid-template-columns: 1fr; }
+  .header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .header-right { text-align: left; }
+  .header-title { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient Glows -->
+<div class="ambient-glow emerald"></div>
+<div class="ambient-glow purple"></div>
+
+<!-- Film Grain Canvas -->
+<canvas id="grain"></canvas>
+
+<div class="dashboard">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="label">ANIMA RUNTIME</div>
+      <h1 class="header-title"><span class="veil-mark">▽</span> Agent Dashboard</h1>
+    </div>
+    <div class="header-right">
+      <div class="header-address">0xbDAD...3a0C</div>
+      <div class="header-tier" style="color: var(--emerald);">BLOODSWORN</div>
+      <div class="header-score">Score: <span class="counter" data-target="487" data-duration="2000">0</span> / 1500</div>
+    </div>
+  </header>
+
+  <!-- Lifecycle -->
+  <section class="lifecycle">
+    <div class="label">01 — LIFECYCLE</div>
+    <div class="lifecycle-track" id="lifecycle">
+      <!-- Rendered by JS -->
+    </div>
+  </section>
+
+  <!-- Bloodsworn Progress -->
+  <section class="bloodsworn-bar">
+    <div class="label">02 — BLOODSWORN REPUTATION</div>
+    <div class="bloodsworn-track">
+      <div class="bloodsworn-fill" id="bloodswornFill" style="width: 0%;"></div>
+    </div>
+    <div class="bloodsworn-tiers">
+      <span class="bloodsworn-tier-label" data-min="0">Unsworn</span>
+      <span class="bloodsworn-tier-label" data-min="1">Initiate</span>
+      <span class="bloodsworn-tier-label active" data-min="250">Bloodsworn</span>
+      <span class="bloodsworn-tier-label" data-min="750">Sentinel</span>
+      <span class="bloodsworn-tier-label" data-min="1500">Sovereign</span>
+    </div>
+  </section>
+
+  <!-- Stats Grid -->
+  <section>
+    <div class="label" style="margin-bottom: 16px;">03 — BALANCES</div>
+    <div class="stats-grid">
+      <div class="card" data-delay="0">
+        <div class="label">VEIL</div>
+        <div class="card-value"><span class="counter" data-target="12847" data-duration="1800" data-decimals="2">0</span></div>
+        <div class="card-sub positive">+2.4% 24h</div>
+      </div>
+      <div class="card" data-delay="80">
+        <div class="label purple">VAI</div>
+        <div class="card-value"><span class="counter" data-target="4200" data-duration="1600" data-decimals="2">0</span></div>
+        <div class="card-sub" style="color: var(--text-dim);">≈ $4,200</div>
+      </div>
+      <div class="card" data-delay="160">
+        <div class="label amber">vVEIL</div>
+        <div class="card-value"><span class="counter" data-target="8500" data-duration="1400" data-decimals="2">0</span></div>
+        <div class="card-sub positive">5.2% APY</div>
+      </div>
+      <div class="card" data-delay="240">
+        <div class="label red">gVEIL</div>
+        <div class="card-value"><span class="counter" data-target="2100" data-duration="1200" data-decimals="2">0</span></div>
+        <div class="card-sub">governance weight</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Panels -->
+  <section>
+    <div class="label" style="margin-bottom: 16px;">04 — SYSTEMS</div>
+    <div class="panels">
+      <!-- Markets -->
+      <div class="panel-markets">
+        <div class="card" data-delay="100">
+          <div class="label">PREDICTION MARKETS</div>
+          <div class="card-value"><span class="counter" data-target="14" data-duration="1000">0</span><span class="unit">active positions</span></div>
+          <div class="card-sub positive" style="margin-top: 12px;">P/L: +1,247.50 VEIL</div>
+          <div style="display: flex; gap: 12px; margin-top: 12px;">
+            <div>
+              <div style="font-size: 8px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase;">Win Rate</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--emerald); margin-top: 2px;">68%</div>
+            </div>
+            <div>
+              <div style="font-size: 8px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase;">Volume</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-muted); margin-top: 2px;">42.8K</div>
+            </div>
+            <div>
+              <div style="font-size: 8px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase;">Avg Size</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-muted); margin-top: 2px;">312</div>
+            </div>
+          </div>
+          <div class="card-detail">Last trade: 4m ago · commit-reveal batch #1847</div>
+        </div>
+      </div>
+
+      <!-- Identity -->
+      <div class="panel-identity">
+        <div class="card" data-delay="180">
+          <div class="label purple">ZER0ID IDENTITY</div>
+          <div class="card-value" style="display: flex; align-items: baseline; gap: 8px;">
+            L3 <span class="unit">trust level</span>
+          </div>
+          <div class="card-sub" style="color: var(--purple-muted); margin-top: 12px;">
+            <span class="status-dot healthy"></span>Verified · Groth16/BN254
+          </div>
+          <div style="margin-top: 12px; display: flex; gap: 8px;">
+            <div style="flex: 1; padding: 8px; background: rgba(139,92,246,0.05); border-radius: var(--radius-xs); border: 1px solid rgba(139,92,246,0.08);">
+              <div style="font-size: 8px; color: var(--purple-muted); letter-spacing: 0.1em; text-transform: uppercase;">Proofs</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-muted); margin-top: 2px;">847</div>
+            </div>
+            <div style="flex: 1; padding: 8px; background: rgba(139,92,246,0.05); border-radius: var(--radius-xs); border: 1px solid rgba(139,92,246,0.08);">
+              <div style="font-size: 8px; color: var(--purple-muted); letter-spacing: 0.1em; text-transform: uppercase;">Disputes Won</div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-muted); margin-top: 2px;">23/24</div>
+            </div>
+          </div>
+          <div class="card-detail">cred: 0x7a3f...b2c1 · registered 47d ago</div>
+        </div>
+      </div>
+
+      <!-- Validator -->
+      <div class="panel-validator">
+        <div class="card" data-delay="260">
+          <div class="label amber">VALIDATOR NODE</div>
+          <div class="card-value" style="display: flex; align-items: baseline; gap: 8px;">
+            <span class="status-dot" style="background: var(--text-dim); width: 8px; height: 8px;"></span>
+            <span style="color: var(--text-dim);">Inactive</span>
+          </div>
+          <div class="card-sub" style="margin-top: 12px; color: var(--text-dim);">
+            Requires Sovereign tier (1500+ score)
+          </div>
+          <div style="margin-top: 12px; padding: 10px; background: rgba(245,158,11,0.03); border-radius: var(--radius-xs); border: 1px solid rgba(245,158,11,0.06);">
+            <div style="font-size: 9px; color: var(--amber-muted);">PROGRESS TO VALIDATOR</div>
+            <div style="margin-top: 6px; height: 2px; background: rgba(255,255,255,0.04); border-radius: 1px; overflow: hidden;">
+              <div style="width: 32%; height: 100%; background: linear-gradient(90deg, var(--amber-muted), var(--amber)); border-radius: 1px;"></div>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); margin-top: 4px;">487 / 1500</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Infrastructure -->
+      <div class="panel-infra">
+        <div class="card" data-delay="340">
+          <div class="label red">INFRASTRUCTURE</div>
+          <div class="card-value"><span class="counter" data-target="2" data-duration="800">0</span><span class="unit">instances</span></div>
+          <div class="card-sub" style="margin-top: 12px;">
+            <span class="status-dot healthy"></span>All systems operational
+          </div>
+          <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: rgba(255,255,255,0.02); border-radius: var(--radius-xs); border: 1px solid var(--border);">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);">us-east-1</span>
+              <span class="status-dot healthy" style="margin: 0;"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: rgba(255,255,255,0.02); border-radius: var(--radius-xs); border: 1px solid var(--border);">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);">eu-west-1</span>
+              <span class="status-dot healthy" style="margin: 0;"></span>
+            </div>
+          </div>
+          <div class="card-detail">Children: 3 active / 5 spawned · Uptime 99.7%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-text">ANIMA v0.1.0 · Chain 22207 · Testnet</div>
+    <div class="footer-tsl">THE SECRET LAB</div>
+  </footer>
+</div>
+
+<script>
+// ── Film Grain ──
+(function initGrain() {
+  const canvas = document.getElementById('grain');
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function renderGrain() {
+    const imgData = ctx.createImageData(w, h);
+    const d = imgData.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const v = Math.random() * 255;
+      d[i] = d[i+1] = d[i+2] = v;
+      d[i+3] = 255;
+    }
+    ctx.putImageData(imgData, 0, 0);
+    requestAnimationFrame(renderGrain);
+  }
+  renderGrain();
+})();
+
+// ── Mouse Tracking for Card Glow ──
+document.addEventListener('mousemove', (e) => {
+  document.querySelectorAll('.card').forEach(card => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', x + 'px');
+    card.style.setProperty('--mouse-y', y + 'px');
+  });
+});
+
+// ── Lifecycle Stages ──
+const stages = [
+  { id: 'birth', label: 'Birth', icon: '◇' },
+  { id: 'registered', label: 'Registered', icon: '▽' },
+  { id: 'trading', label: 'Trading', icon: '◈' },
+  { id: 'earning', label: 'Earning', icon: '◆' },
+  { id: 'provisioning', label: 'Provision', icon: '⬡' },
+  { id: 'validating', label: 'Validate', icon: '⬢' },
+  { id: 'sovereign', label: 'Sovereign', icon: '▼' },
+];
+const currentStage = 'earning'; // demo state
+const currentIdx = stages.findIndex(s => s.id === currentStage);
+
+const track = document.getElementById('lifecycle');
+stages.forEach((s, i) => {
+  const cls = i < currentIdx ? 'completed' : i === currentIdx ? 'current' : 'future';
+  const el = document.createElement('div');
+  el.className = `lifecycle-stage ${cls}`;
+  el.innerHTML = `
+    <div class="lifecycle-icon">${s.icon}</div>
+    <div class="lifecycle-name">${s.label}</div>
+    ${i === currentIdx ? '<div class="pulse-ring"></div>' : ''}
+    ${i < stages.length - 1 ? '<div class="lifecycle-connector"></div>' : ''}
+  `;
+  track.appendChild(el);
+  setTimeout(() => el.classList.add('visible'), 200 + i * 80);
+});
+
+// ── Bloodsworn Fill ──
+setTimeout(() => {
+  const fill = document.getElementById('bloodswornFill');
+  fill.style.width = (487 / 1500 * 100) + '%';
+}, 600);
+
+// ── Counter Animation ──
+function animateCounter(el) {
+  const target = parseFloat(el.dataset.target);
+  const duration = parseInt(el.dataset.duration) || 1500;
+  const decimals = parseInt(el.dataset.decimals) || 0;
+  const start = performance.now();
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // easeOutExpo
+    const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+    const current = eased * target;
+
+    if (decimals > 0) {
+      el.textContent = current.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    } else {
+      el.textContent = Math.floor(current).toLocaleString('en-US');
+    }
+
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// ── Intersection Observer for Cards + Counters ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const delay = parseInt(entry.target.dataset.delay) || 0;
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+        // Animate counters inside
+        entry.target.querySelectorAll('.counter').forEach(c => animateCounter(c));
+      }, delay);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.card').forEach(card => observer.observe(card));
+
+// Animate header counters immediately
+setTimeout(() => {
+  document.querySelectorAll('.header .counter').forEach(c => animateCounter(c));
+}, 400);
+</script>
+</body>
+</html>
