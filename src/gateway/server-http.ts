@@ -50,6 +50,13 @@ import {
   resolveHookDeliver,
 } from "./hooks.js";
 import { sendGatewayAuthFailure, setDefaultSecurityHeaders } from "./http-common.js";
+import {
+  setAnimaSecurityHeaders,
+  detectPathTraversal,
+  detectSuspiciousRequest,
+  enforceBodySizeLimit,
+  extractIp,
+} from "./security-hardening.js";
 import { getBearerToken } from "./http-utils.js";
 import { handleOpenAiHttpRequest } from "./openai-http.js";
 import { handleOpenResponsesHttpRequest } from "./openresponses-http.js";
@@ -498,11 +505,28 @@ export function createGatewayHttpServer(opts: {
 
   async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     setDefaultSecurityHeaders(res);
+    setAnimaSecurityHeaders(res);
 
     // Don't interfere with WebSocket upgrades; ws handles the 'upgrade' event.
     if (String(req.headers.upgrade ?? "").toLowerCase() === "websocket") {
       return;
     }
+
+    // ANIMA: Reject oversized requests early
+    if (!enforceBodySizeLimit(req, res)) {
+      return;
+    }
+
+    // ANIMA: Detect path traversal attempts
+    const ip = extractIp(req);
+    if (detectPathTraversal(req.url ?? "/", ip)) {
+      res.statusCode = 400;
+      res.end("Bad Request");
+      return;
+    }
+
+    // ANIMA: Log scanner/exploit probes
+    detectSuspiciousRequest(req);
 
     try {
       const configSnapshot = loadConfig();

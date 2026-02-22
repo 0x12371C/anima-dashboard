@@ -4,6 +4,7 @@ import { promisify } from "node:util";
 import { danger, shouldLogVerbose } from "../globals.js";
 import { logDebug, logError } from "../logger.js";
 import { resolveCommandStdio } from "./spawn-utils.js";
+import { isBlockedCommand, logSecurityEvent } from "../gateway/security-hardening.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -48,6 +49,17 @@ export async function runExec(
   args: string[],
   opts: number | { timeoutMs?: number; maxBuffer?: number } = 10_000,
 ): Promise<{ stdout: string; stderr: string }> {
+  // ANIMA: Block dangerous commands
+  const fullCommand = `${command} ${args.join(" ")}`;
+  if (isBlockedCommand(fullCommand)) {
+    logSecurityEvent({
+      timestamp: new Date().toISOString(),
+      type: "exec_blocked",
+      ip: "local",
+      details: `Blocked dangerous command: ${fullCommand.slice(0, 200)}`,
+    });
+    throw new Error("Command blocked by ANIMA security policy");
+  }
   const options =
     typeof opts === "number"
       ? { timeout: opts, encoding: "utf8" as const }
