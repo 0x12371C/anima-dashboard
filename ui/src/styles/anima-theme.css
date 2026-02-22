@@ -1,0 +1,118 @@
+/**
+ * ANIMA Theme — Dark luxury aesthetic matching VEIL design system
+ *
+ * Colors:
+ *   bg: #060606
+ *   accent: rgba(16,185,129,*) (emerald)
+ *   text: rgba(255,255,255,0.87)
+ *   muted: rgba(255,255,255,0.35)
+ *   label: rgba(16,185,129,0.4)
+ *   card-bg: rgba(255,255,255,0.015)
+ *   card-border: rgba(255,255,255,0.04)
+ *
+ * Typography:
+ *   headings: 'Instrument Serif', serif
+ *   labels: 'Space Grotesk', sans-serif — 9px, tracking 0.4em, uppercase
+ *   body: 'Figtree', sans-serif — weight 300
+ *   mono: 'JetBrains Mono', monospace
+ */
+
+:root {
+  --anima-bg: #060606;
+  --anima-bg-card: rgba(255, 255, 255, 0.015);
+  --anima-border: rgba(255, 255, 255, 0.04);
+  --anima-border-hover: rgba(255, 255, 255, 0.08);
+  --anima-text: rgba(255, 255, 255, 0.87);
+  --anima-text-muted: rgba(255, 255, 255, 0.35);
+  --anima-text-dim: rgba(255, 255, 255, 0.15);
+  --anima-accent: rgb(16, 185, 129);
+  --anima-accent-muted: rgba(16, 185, 129, 0.4);
+  --anima-accent-bg: rgba(16, 185, 129, 0.08);
+  --anima-purple: rgb(139, 92, 246);
+  --anima-amber: rgb(245, 158, 11);
+  --anima-red: rgb(239, 68, 68);
+  --anima-radius: 12px;
+  --anima-radius-sm: 8px;
+}
+
+/* Override base OpenClaw styles */
+body {
+  background: var(--anima-bg) !important;
+  color: var(--anima-text) !important;
+  font-family: 'Figtree', 'Space Grotesk', system-ui, -apple-system, sans-serif !important;
+  font-weight: 300;
+}
+
+/* Section labels — numbered VEIL style */
+.anima-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--anima-accent-muted);
+}
+
+/* Cards */
+.anima-card {
+  background: var(--anima-bg-card);
+  border: 1px solid var(--anima-border);
+  border-radius: var(--anima-radius);
+  padding: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.anima-card:hover {
+  border-color: var(--anima-border-hover);
+}
+
+/* Stat values */
+.anima-stat {
+  font-size: 24px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.anima-stat-label {
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--anima-accent-muted);
+  margin-bottom: 4px;
+}
+
+/* Accent colors for different modules */
+.anima-markets { color: var(--anima-accent); }
+.anima-identity { color: var(--anima-purple); }
+.anima-staking { color: var(--anima-amber); }
+.anima-validator { color: var(--anima-red); }
+
+/* Film grain overlay (optional, matches VEIL site) */
+.anima-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}

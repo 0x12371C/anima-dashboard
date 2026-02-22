@@ -1,0 +1,12 @@
+{
+  "name": "@anima/llm-task",
+  "version": "2026.2.22",
+  "private": true,
+  "description": "ANIMA JSON-only LLM task plugin",
+  "type": "module",
+  "anima": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

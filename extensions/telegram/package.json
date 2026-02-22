@@ -1,0 +1,15 @@
+{
+  "name": "@anima/telegram",
+  "version": "2026.2.22",
+  "private": true,
+  "description": "ANIMA Telegram channel plugin",
+  "type": "module",
+  "devDependencies": {
+    "anima": "workspace:*"
+  },
+  "anima": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
